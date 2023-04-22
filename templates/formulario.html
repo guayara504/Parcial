@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Formulario de Venta</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container mt-3">
+	<h2>Formulario de Venta</h2>
+	<form action="{{ url_for('procesar') }}" method="POST">
+		<div class="form-group">
+			<label for="producto">Producto:</label>
+			<select class="form-control" id="producto" name="producto" onchange="actualizar_precio()">
+				<option value="">Seleccione un producto</option>
+				{% for id, producto in productos.items() %}
+				<option value="{{ id }}" data-precio="{{ producto.precio }}">{{ producto.nombre }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="cantidad">Cantidad:</label>
+			<input type="number" class="form-control" id="cantidad" name="cantidad" min="1" required>
+		</div>
+		<button type="submit" class="btn btn-primary">Procesar</button>
+	</form>
+	<div id="mensaje" class="text-danger mt-2"></div>
+</div>
+
+<script type="text/javascript">
+	function actualizar_precio() {
+		var producto = $("#producto").val();
+		if (producto != "") {
+			var precio = $("#producto option:selected").data("precio");
+			$("#cantidad").attr("max", "10");
+			$("#mensaje").html("");
+			$("#cantidad").removeAttr("disabled");
+			$("#cantidad").val("1");
+			$("#cantidad").attr("max", "10");
+			$("#precio").html(precio.toLocaleString());
+		} else {
+			$("#cantidad").val("");
+			$("#cantidad").attr("disabled", "disabled");
+			$("#precio").html("");
+		}
+	}
+	$(document).ready(function() {
+		$("#cantidad").on("input", function() {
+			var cantidad = $(this).val();
+			var producto = $("#producto").val();
+			var max_cantidad = 10;
+			if (producto == 3) {
+				max_cantidad = 1;
+			}
+			if (cantidad < 1 || cantidad > max_cantidad) {
+				$("#mensaje").html("La cantidad debe estar entre 1 y " + max_cantidad);
+				$(this).val("");
+			} else {
+				$("#mensaje").html("");
+			}
+		});
+	});
+</script>
+
+</body>
+</html>
